@@ -10,7 +10,7 @@ function RepoItem({repo}) {
         open_issues,
         watchers_count,
         stargazers_count
-    } = repo;
+    } = repo ? repo : [];
 
     return <div className='mb-2 rounded-md card bg-gray-800 hover:bg-gray-900'>
         <div className="card-body">
