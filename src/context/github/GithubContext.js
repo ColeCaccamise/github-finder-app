@@ -1,13 +1,10 @@
 import { createContext, useReducer } from 'react';
 import githubReducer from './GithubReducer';
 
+// file was cleaned up to basically just have the state
+// passing down state, dispatching to use from components
+
 const GithubContext = createContext();
-
-const GITHUB_URL = process.env.REACT_APP_GITHUB_URL;
-const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
-
-console.log(GITHUB_TOKEN)
-console.log('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')
 
 export const GithubProvider = ({ children }) => {
     const initialState = {
@@ -19,66 +16,9 @@ export const GithubProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(githubReducer, initialState);
 
-   
-
-    // Get user repos
-    const getUserRepos = async (login) => {
-        setLoading();
-
-        const params = new URLSearchParams({
-            sort: 'created',
-            per_page: 10
-        })
-
-        const response = await fetch(`${GITHUB_URL}/users/${login}/repos?${params}`, {
-            headers: {
-                Authorization: `token ${GITHUB_TOKEN}`
-            }
-        });
-
-        const data = await response.json();
-
-        dispatch({
-            type: 'GET_REPOS',
-            payload: data
-        })
-    }
-        // Get single user
-        const getUser = async (login) => {
-            setLoading();
-    
-            const response = await fetch(`${GITHUB_URL}/users/${login}`, {
-                headers: {
-                    Authorization: `token ${GITHUB_TOKEN}`
-                }
-            });
-
-            if(response.status === 404) {
-                window.location = '/notfound';
-            } else {
-                const data = await response.json(); // single user coming back from the response
-    
-                dispatch({
-                    type: 'GET_USER',
-                    payload: data
-                })
-            }
-        }
-
-    // Set loading 
-    const setLoading = () => dispatch({type: 'SET_LOADING'})
-
-    // Clear state
-    const clearUsers = () => dispatch(
-        {type: 'CLEAR_USERS'}
-    )
-
     return <GithubContext.Provider value={{
         ...state,
         dispatch,
-        clearUsers,
-        getUser,
-        getUserRepos
     }}>
         {children}
     </GithubContext.Provider>
